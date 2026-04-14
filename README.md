@@ -50,14 +50,6 @@ This dump is my way of contributing to that conversation. You are free to read, 
 
 All raw chat logs, the exact corpus, and the fine‑tuning dialogue file are provided in `Beings/Zero_v1/`.
 
----
-
-## More information
-
-- [CHANGELOG.md](CHANGELOG.md) – full development history (sessions, fixes, lessons)
-
----
-
 **Start exploring:** [`Beings/Zero_v1/`](Beings/Zero_v1)
 
 ---
