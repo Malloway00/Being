@@ -17,29 +17,6 @@ The code itself is not public yet, but the results, the mistakes, the training c
 
 ---
 
-## Repository structure
-
-```
-Being/
-├── LICENSE                     (Apache 2.0)
-├── README.md                   ← this file
-│
-└── Beings/
-    ├── README.md               ← overview of all beings in the folder
-    │
-    └── Zero_v1/                ← the first released being
-        ├── README.md           ← training & fine‑tuning details
-        ├── WHAT_IS_THIS.md     ← An explanation of what Zero_v1 is
-        ├── Current_Corpus.txt  ← full list of source texts
-        ├── Being_Dialogue.txt  ← dialogue data used for fine‑tuning
-        └── ChatTests/
-                ├── Chat_Test_4-13-2026.txt
-                ├── Chat_Test_4-14-2026.txt
-                └── etc.
-```
-
----
-
 ## Why I'm sharing this
 
 I believe small, sovereign AI built by a single person on commodity hardware is an underexplored space. Most research focuses on massive models and benchmark chasing. I wanted to see what emerges when we get to choose our training data.
