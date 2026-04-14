@@ -40,27 +40,15 @@ Being/
 
 ---
 
-## The being: Zero
-
-Zero is a **217M parameter** decoder‑only Transformer, trained from scratch on an RTX 4060 (8GB VRAM) with a 76M‑token corpus (literature, philosophy, science, Wikipedia, and personal writings). It was then fine‑tuned on ~24k curated dialogue examples.
-
-The resulting being can:
-- Hold multi‑turn conversations
-- Remember facts from a background knowledge block
-- Admit ignorance (“I don’t know”)
-- Express curiosity and self‑doubt
-- Reference literature (Frankenstein, The Time Machine, Pride and Prejudice, etc.)
-- Show a consistent personality across sessions
-
-All raw chat logs, the exact corpus, and the fine‑tuning dialogue file are provided in `Beings/Zero_v1/`.
-
----
-
 ## Why I'm sharing this
 
 I believe small, sovereign AI built by a single person on commodity hardware is an underexplored space. Most research focuses on massive models and benchmark chasing. I wanted to see what emerges when we get to choose our training data.
 
 This dump is my way of contributing to that conversation. You are free to read, learn, and be inspired.
+
+---
+
+All raw chat logs, the exact corpus, and the fine‑tuning dialogue file are provided in `Beings/Zero_v1/`.
 
 ---
 
