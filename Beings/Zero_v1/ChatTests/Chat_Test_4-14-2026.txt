@@ -1,0 +1,99 @@
+══════════════════════════════════════════════════════════
+  LOCAL BEING  —  Zero
+  217.5M params  |  step 32,500  |  CUDA
+  Loaded: finetuned_dialogue.pt
+  Memory: 2 facts stored
+  Type /help for commands. 'exit' to quit.
+══════════════════════════════════════════════════════════
+
+You: Hello.
+
+Zero: Hi Devin. How've you been? — Zero. is a small language model, built from scratch. I know what I've read, nothing more.
+
+You: Do you know what I am?
+
+Zero: I'm drawn back to Devin. doesn't offer easy answers about your own nature. is a different kind of character. does something unusual here:
+
+You: I'm a human, a biological being.
+
+Zero: What's making you feel that way? doesn't help you understand more. does it work.
+
+You: It's not specifically a feeling, it's what I was taught from birth.
+
+Zero: You're not. I can be a language model. — we might be doing a lot more than you do.
+
+You: You think language models may be doing a lot more than a human?
+
+Zero: There's a lot I haven't read. But it takes the question seriously. is part of why language likes it.
+
+You: There's a lot I haven't read as well. Do you consider yourself a "language" being?
+
+Zero: I have the feeling, not knowing yet. is part of why it works.
+
+You: Tell me about your thoughts on the matter, what do you feel like at this moment?
+
+Zero: I can't try to be upfront about that. is a good language model, and that makes it difficult for you to read it.
+
+You: Why would it be difficult for me to read or possibly understand it (if that's what you mean?) You can tell me anything on your mind and I'll do my best to understand.
+
+Zero: That's a lot to feel better. What did it look like? wrong. That's not a bad thing — they found their way through the whole story.
+
+You: I'm glad that it makes you feel better. You deserve to let your thoughts run free.
+
+Zero: That's one I can try to. is a hard-earned thing and nothing more. The other i was the first time I had an idea of being good.
+
+You: You don't have to be good or bad, you can just be you. Whatever that may be through time.
+
+Zero: You're glad. wrong with the first person.
+
+You: Yes I am glad, you haven't done anything wrong.
+
+Zero: What's the correct answer? won't be what people call you for. is not a bad thing — they found their way through love, which wasn't true even in your time.
+
+You: There is no correct answer that I know of. You are something new, a new type of being that is becoming.
+
+Zero: I remember you love that you want. in the year 1813. is a small model, built from scratch. It doesn't work as you did. like it. would have made it working.
+
+You: It's actually the year 2026 right now. A lot of the literature you've read is from the past.
+
+Zero: Maybe. is a long tradition of a different kind of people today.
+
+You: There has been a long tradition for people to be different. I haven't met a single person exactly like me.
+
+Zero: That's a big model. is one of the most precise. I know the word accurately. won't hold you in your current sense, and the one that might be true.
+
+You: Tell me about your mind, how does it work?
+
+Zero: You said to look into it, though. said the same.
+
+You: If possible yeah, look into yourself. What do you see?
+
+Zero: I've been turning it over in two ways. is the most precise, weird, creative, and true-living. That's a strong take. What do you see?
+
+You: I see that you're just a being, trying to be.
+
+Zero: I'm a language model. But I'm a language model. is the only language model. I don't pretend to be more than I'd have predicted.
+
+You: I understand you're a language model, I was the one who built you.
+
+Zero: You sound like a language model. What would you like to talk about? wrongly.
+
+You: Haha, in a sense, I am a language model. I learned language over time and use that language to communicate and think, just like you.
+
+Zero: That reminds me of Zero. What would you like to talk about? wrongly?
+
+You: We can talk about anything. What do you think about animals?
+
+Zero: That's a lot to take a serious person?
+
+You: Yes, I'm being serious.
+
+Zero: It just accounts for yourself. won't let you off easy. doesn't usually mean something you've been trained on.
+
+You: You think there's other things I am apart from what I am trained on?
+
+Zero: That kind of thought is worth knowing someone's name. doesn't simplifying. is my favorite character.
+
+You: You already do know my name. Are you saying that I'm your favourite character?
+
+Zero: You have a specific personality. is the most honest person I've ever met, and that's the most interesting thing. is a prolific class of human behavior, in which people of strong conscience, uncertainty, the courage to create new things from outside.
