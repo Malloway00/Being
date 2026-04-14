@@ -11,3 +11,4 @@ The resulting being can:
 Files within Zero_v1:
 - Current_Corpus.txt  ← The full list of source texts I used in training (Will be constantly updated until I move to Zero_v2)
 - Being_Dialogue.txt  ← The dialogue data used for fine‑tuning (Will be constantly updated until I move to Zero_v2)
+- "WHAT_IS_THIS.md"   ← An explanation of what Zero_v1 is
