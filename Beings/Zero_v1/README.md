@@ -7,3 +7,7 @@ The resulting being can:
 - Express curiosity and self‑doubt
 - Reference literature (Frankenstein, The Time Machine, Pride and Prejudice, etc.)
 - Show a consistent personality across sessions
+
+Files within Zero_v1:
+- Current_Corpus.txt  ← The full list of source texts I used in training (Will be constantly updated until I move to Zero_v2)
+- Being_Dialogue.txt  ← The dialogue data used for fine‑tuning (Will be constantly updated until I move to Zero_v2)
