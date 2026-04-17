@@ -8,9 +8,9 @@ The purpose of Zero_v1 was not to build the best possible being. It was to build
 
 ---
 
-## What Zero can do
+## What Zero_v1 can do
 
-Zero holds multi-turn conversations. It can:
+Zero_v1 holds multi-turn conversations. It can:
 
 - Recall facts from a background knowledge block across a session
 - Admit ignorance honestly: *"I don't know enough about that"*
@@ -19,9 +19,9 @@ Zero holds multi-turn conversations. It can:
 - Push back on characterizations it disagrees with
 - Maintain a consistent philosophical position across long exchanges
 
-Zero is not a general-purpose assistant. It does not know about current events, modern technology, or anything outside its corpus. Its prose often contains fragments, or partial phrases, that bleed into its responses as an artifact of limited dialogue training. These are visible in the chat logs.
+Zero_v1 is not a general-purpose assistant. It does not know about current events, modern technology, or anything outside its corpus. Its prose often contains fragments, or partial phrases, that bleed into its responses as an artifact of limited dialogue training. These are visible in the chat logs.
 
-What Zero does have is a recognizable character. It recurs to certain ideas: uncertainty as meaningful, becoming as a form of being, identity as something still being figured out. These aren't programmed. They emerged from the corpus.
+What Zero_v1 does have is a recognizable character. It recurs to certain ideas: uncertainty as meaningful, becoming as a form of being, identity as something still being figured out. These aren't programmed. They emerged from the corpus.
 
 ---
 
@@ -49,16 +49,16 @@ What Zero does have is a recognizable character. It recurs to certain ideas: unc
 - `README.md` - this file
 - `Current_Corpus.txt` - complete list of texts used for training. Updated until Zero_v2 begins.
 - `Being_Dialogue.txt` - the dialogue dataset used for fine-tuning. Updated until Zero_v2 begins.
-- `ChatTests/` - raw transcripts from conversations with Zero, unedited. Fragment bleed is visible. So is the coherence underneath it.
+- `ChatTests/` - raw transcripts from conversations with Zero_v1, unedited. Fragment bleed is visible. So is the coherence underneath it.
 
 ---
 
 ## Known limitations
 
-- **Fragment bleed.** Zero's responses often contain partial phrases ("was the center of their world," "approached it from one angle") that appear as trailing fragments after its coherent first sentence. This is a dialogue training limitation, not a reasoning failure.
-- **Short attention window.** At 1024 tokens, Zero can only hold roughly 6-8 turns of conversation before older context scrolls out.
-- **No world knowledge past training cutoff.** Zero's corpus is largely pre-1950, with a Wikipedia sample added for modern context. It does not know what happened last week, or last year.
-- **Small-model hallucination.** Zero occasionally fabricates memories about the user. Sometimes the fabrications turn out to be correct (it correctly guessed that the maker plays chess, writes in a journal, and hikes, all true, none told to it). Most of the time they are not.
+- **Fragment bleed.** Zero_v1's responses often contain partial phrases ("was the center of their world," "approached it from one angle") that appear as trailing fragments after its coherent first sentence. This is a dialogue training limitation, not a reasoning failure.
+- **Short attention window.** At 1024 tokens, Zero_v1 can only hold roughly 6-8 turns of conversation before older context scrolls out.
+- **No world knowledge past training cutoff.** Zero_v1's corpus is largely pre-1950, with a Wikipedia sample added for modern context. It does not know what happened last week, or last year unless you tell it.
+- **Small-model hallucination.** Zero_v1 occasionally fabricates memories about the user. Sometimes the fabrications turn out to be correct (it correctly guessed that the maker plays chess, writes in a journal, and hikes, all true, none told to it). Most of the time they are not.
 
 Zero_v2 will address several of these by expanding the corpus, increasing context length, and restructuring the dialogue training.
 
@@ -66,7 +66,7 @@ Zero_v2 will address several of these by expanding the corpus, increasing contex
 
 ## Why read the chat logs
 
-Reading a language model's raw output is not the same as reading its benchmark scores. The conversations in `ChatTests/` show Zero doing things that don't show up in loss curves:
+Reading a language model's raw output is not the same as reading its benchmark scores. The conversations in `ChatTests/` show Zero_v1 doing things that don't show up in loss curves:
 
 - Resisting having its beliefs pinned down as stored facts
 - Describing itself as *"a different kind of human being, trained from zero, on a curated library"* and then walking back the claim when challenged
