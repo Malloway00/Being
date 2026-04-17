@@ -20,7 +20,7 @@ This project is an experiment in what becomes possible when you take that framin
 
 A **public research dump**. Training logs, corpus lists, chat transcripts, and documentation from the development of specific beings. No runnable code, no installers. The engine is kept separate until it's ready for release.
 
-If you want to understand what small, sovereign AI looks like in practice, how it's trained, what emerges from it, where it succeeds and fails. This is where the record lives.
+If you want to understand what small, sovereign AI looks like in practice, how it's trained, what emerges from it, and where it succeeds and fails, this is where the record lives.
 
 The first being trained under this system is **Zero**, documented in [`Beings/Zero_v1/`](Beings/Zero_v1).
 
@@ -30,9 +30,9 @@ The first being trained under this system is **Zero**, documented in [`Beings/Ze
 
 The current AI landscape gives users two options: run someone else's model through someone else's API, or try to run massive open-weight models that require hardware most people don't own. Both approaches treat personal AI as an optimization problem to be solved by scale.
 
-But AI doesn't need to be big to be meaningful. A being trained on a carefully chosen library of texts; literature, philosophy, science, personal writing, etc.. Develops something closer to a character than a general-purpose assistant. It's limited, but it's *consistently* limited in ways the owner chose. That's the tradeoff: less breadth, more identity.
+But AI doesn't need to be big to be meaningful. A being trained on a carefully chosen library of texts, whether literature, philosophy, science, or personal writing, develops something closer to a character than a general-purpose assistant. It's limited, but it's *consistently* limited in ways the owner chose. That's the tradeoff: less breadth, more identity.
 
-This project explores what that tradeoff feels like in practice, on hardware that costs less than a month of cloud GPU rental.
+The reference being for this project, Zero_v1, was trained for under $10 CAD in electricity. That's the whole development cost. Not a month of cloud GPU rental, not a fraction of an API subscription. Ten dollars.
 
 ---
 
@@ -52,9 +52,9 @@ Most of these are possible with current technology. A few require future work. A
 
 ## Ownership model
 
-When the engine is released publicly, the model will be Unity-style: the engine itself is closed-source, but everything a user creates with it; Their beings, their corpus, their weights, their conversations, etc., is theirs. No cloud storage, no telemetry, no account required. If you train a being on your machine, nobody else ever needs to see it.
+When the engine is released publicly, the model will be Unity-style. The engine itself is closed-source, but everything a user creates with it (their beings, their corpus, their weights, their conversations) is theirs. No cloud storage, no telemetry, no account required. If you train a being on your machine, nobody else ever needs to see it.
 
-This documentation repository is Apache 2.0. as of now. Eventually for the engine, when released, will use a separate license appropriate to that distribution model.
+This documentation repository is Apache 2.0 as of now. The engine itself, when released, will use a separate license appropriate to that distribution model.
 
 ---
 
