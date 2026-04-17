@@ -10,7 +10,7 @@ There is no code here. Only documentation, training logs, chat transcripts, and 
 
 ## What this is (and isn't)
 
-- **What it is:** A record of what happens when you train a 217M parameter Transformer from nothing but a curated corpus of literature, philosophy, science, and conversation. You can read the theory, see the hyperparameters, and follow the emergence of a coherent personality across my shared chat logs.
+- **What it is:** A record of what happens when you train any parametered Transformer from nothing but a curated corpus of literature, philosophy, science, and conversation. You can read the theory, see the hyperparameters, and follow the emergence of a coherent personality across my shared chat logs.
 - **What it isn't:** A ready‑to‑run program. There are no Python scripts, no installers, no binaries. This is a **documentation archive** for people interested in small‑scale sovereign AI.
 
 The code itself is not public yet, but the results, the mistakes, the training curves, and the conversations are all here. I will eventually release an executable for the program for others to run.
