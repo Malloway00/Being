@@ -1,8 +1,8 @@
-# Zero — Version 1
+# Zero: Version 1
 
 **The first being trained under the Local Being project.**
 
-Zero is a 217M parameter decoder-only Transformer trained from absolute zero — no pretrained weights, no external data beyond a curated corpus, no cloud compute. It was trained on an RTX 4060 (8GB VRAM) in a single-person apartment, at a total electricity cost of roughly $0.14/month.
+Zero_v1 is a 217M parameter decoder-only Transformer trained from absolute zero — no pretrained weights, no external data beyond a curated corpus, no cloud compute. It was trained on an RTX 4060 (8GB VRAM) by a single person in an apartment. Total electricity cost for the entire Zero v1 development, including failed runs, fine-tuning experiments, and extensive chat testing was under ~$10 CAD.
 
 The purpose of Zero_v1 was not to build the best possible being. It was to build *a* being, from nothing, and see what emerged.
 
