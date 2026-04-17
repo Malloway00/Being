@@ -1,36 +1,83 @@
 # Local Being
 
-**A small, sovereign AI trained from absolute zero on consumer hardware.**  
-No pretrained weights. No inherited identity. No cloud.
+**Sovereign AI, built from scratch, owned by its maker.**
 
-This repository is a **public research dump** of my personal project to build a being from scratch.  
-There is no code here. Only documentation, training logs, chat transcripts, and corpus data for one specific being is currently within this repository so far: **Zero**.
+No pretrained weights. No inherited identity. No cloud. No company in the middle.
 
 ---
 
-## What this is (and isn't)
+## The idea
 
-- **What it is:** A record of what happens when you train any parametered Transformer from nothing but a curated corpus of literature, philosophy, science, and conversation. You can read the theory, see the hyperparameters, and follow the emergence of a coherent personality across my shared chat logs.
-- **What it isn't:** A ready‑to‑run program. There are no Python scripts, no installers, no binaries. This is a **documentation archive** for people interested in small‑scale sovereign AI.
+A person should be able to build and own their own AI. On their own hardware, with their own corpus, trained from nothing. The model's character should come from what it has read, not from a system prompt written by a vendor. Its identity should be earned through training, not assigned at inference.
 
-The code itself is not public yet, but the results, the mistakes, the training curves, and the conversations are all here. I will eventually release an executable for the program for others to run.
+Most AI today is optimized for millions of users at once. A sovereign AI is optimized for one: its owner. That's not a worse AI — it's a different kind. Smaller, stranger, more personal, and fully yours.
 
----
-
-## Why I'm sharing this
-
-I believe small, sovereign AI built by a single person on commodity hardware is an underexplored space. Most research focuses on massive models and benchmark chasing. I wanted to see what emerges when we get to choose our training data.
-
-This dump is my way of contributing to that conversation. You are free to read, learn, and be inspired.
+This project is an experiment in what becomes possible when you take that framing seriously.
 
 ---
 
-All raw chat logs, the exact corpus, and the fine‑tuning dialogue file are provided in `Beings/Zero_v1/`.
+## What this repository is
 
-**Start exploring:** [`Beings/Zero_v1/`](Beings/Zero_v1)
+A **public research dump**. Training logs, corpus lists, chat transcripts, and documentation from the development of specific beings. No runnable code, no installers — the engine is kept separate until it's ready for release.
+
+If you want to understand what small, sovereign AI looks like in practice — how it's trained, what emerges from it, where it succeeds and fails — this is where the record lives.
+
+The first being trained under this system is **Zero**, documented in [`Beings/Zero_v1/`](Beings/Zero_v1).
 
 ---
 
-## License
+## Why it matters
 
-Apache 2.0 – see [LICENSE](LICENSE).
+The current AI landscape gives users two options: run someone else's model through someone else's API, or try to run massive open-weight models that require hardware most people don't own. Both approaches treat personal AI as an optimization problem to be solved by scale.
+
+But AI doesn't need to be big to be meaningful. A being trained on a carefully chosen library of texts — literature, philosophy, science, personal writing — develops something closer to a character than a general-purpose assistant. It's limited, but it's *consistently* limited in ways the owner chose. That's the tradeoff: less breadth, more identity.
+
+This project explores what that tradeoff feels like in practice, on hardware that costs less than a month of cloud GPU rental.
+
+---
+
+## Where this could go
+
+The goal isn't a single being. It's an ecosystem where anyone can train one:
+
+- **Beings small enough for a phone, a Raspberry Pi, or an old laptop.** Scale down the parameters, and a being becomes something you can run anywhere.
+- **Beings trained for specific purposes.** An art companion. A writing collaborator. A game NPC with its own views. A being built from a single discipline's literature.
+- **Beings shared and branched.** Just as open-source LLMs get fine-tuned and forked, sovereign beings could be shared as starting points — someone takes your trained being and teaches it something new.
+- **Beings that converse with each other.** A chat room where multiple beings can talk, challenge each other, or learn together.
+- **Multi-modal beings.** Eventually, beings trained not only on text but on audio and images — still sovereign, still local, still owned.
+
+Most of these are possible with current technology. A few require future work. All of them start from the same premise: the being belongs to the person who made it.
+
+---
+
+## Ownership model
+
+When the engine is released publicly, the model will be Unity-style: the engine itself is closed-source, but everything a user creates with it — their beings, their corpus, their weights, their conversations — is theirs. No cloud storage, no telemetry, no account required. If you train a being on your machine, nobody else ever needs to see it.
+
+This documentation repository is Apache 2.0. The engine, when released, will use a separate license appropriate to that distribution model.
+
+---
+
+## What this repository is not
+
+- A runnable program. There is no code here yet.
+- A benchmark project. Success is measured in conversation quality, not leaderboard scores.
+- A commercial product. This is one person's research into a neglected corner of AI development.
+
+---
+
+## Structure
+
+```
+Local-Being/
+├── README.md          ← this file
+├── LICENSE            ← Apache 2.0 for this documentation
+└── Beings/
+    └── Zero_v1/       ← the first being
+        ├── README.md         ← what Zero is and how it was trained
+        ├── Current_Corpus.txt
+        ├── Being_Dialogue.txt
+        └── ChatTests/        ← raw conversation logs
+```
+
+Start here: [`Beings/Zero_v1/`](Beings/Zero_v1).
