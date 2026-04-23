@@ -733,7 +733,7 @@ Three targeted fixes addressing fragment bleed and trailing junk in Zero_v2 outp
 - Parameter name `repetition_penalty` preserved for backward-compat. `1.0` stays off. Mapping: `penalty_strength = max(0, repetition_penalty - 1.0)` precomputed once per `generate()` call.
 - New parameter `freq_threshold: int = 2`. Added to signature, not yet exposed via chat CLI - left for a future pass if live tuning proves useful.
 - Numerical effect: old 1.15 produced uniform mild suppression across all repeats. New 1.15 produces near-zero effect at count=3 (barely noticeable), ramping linearly to aggressive suppression at count=20+. Matches the stated goal of "preserve natural language repetition, kill loops".
-- Default `repetition_penalty=1.15` in `ChatConfig` unchanged; post-Zero_v3 tuning may want to bump to `1.25`–`1.3` depending on whether mid-range loops (count 3-5) escape the current threshold. Noted for observation.
+- Default `repetition_penalty=1.15` in `ChatConfig` unchanged; post-Zero_v2 tuning may want to bump to `1.25`–`1.3` depending on whether mid-range loops (count 3-5) escape the current threshold. Noted for observation.
 
 ### Files Changed
 - `build_tokenizer.py` - `encode()` factored, split-on-separator added
@@ -759,8 +759,8 @@ All three parse clean via `ast.parse`. Each fix verified against concrete test c
 
 ### Observations for Future Sessions
 
-**Tuning check post-Zero_v3:** if generation produces mid-range loops like "I'm here. I'm here. I'm here." (count=3 per token), the `repetition_penalty=1.15` default may be too permissive. Bumping to 1.25–1.3 or adjusting `freq_threshold` to 1 are the levers.
+**Tuning check post-Zero_v2:** if generation produces mid-range loops like "I'm here. I'm here. I'm here." (count=3 per token), the `repetition_penalty=1.15` default may be too permissive. Bumping to 1.25–1.3 or adjusting `freq_threshold` to 1 are the levers.
 
-**Exposing `freq_threshold` via chat CLI:** trivial addition to chat.py's command table (e.g. `/freqthresh <int>`), not done in this session to keep scope minimal. Worth adding if live tuning proves useful during Zero_v3 chat testing.
+**Exposing `freq_threshold` via chat CLI:** trivial addition to chat.py's command table (e.g. `/freqthresh <int>`), not done in this session to keep scope minimal. Worth adding if live tuning proves useful during Zero_v2 chat testing.
 
 **Mask performance:** per-dialogue mask construction at `__init__` is O(len × marker_len). For 24k examples averaging ~500 tokens, roughly 12M ops - negligible. Confirming no need for optimization.
