@@ -4,148 +4,6 @@ All notable changes, fixes, and additions to the Local Being project.
 
 ---
 
-## Session 24 — Fragment Bleed Remediation: EOS, Response Masking, Frequency Penalty
-
-### Summary
-Three targeted fixes addressing fragment bleed and trailing junk in Zero_v2 output. Makes the model actually learn end-of-response (it previously saw `---` only as plain text), trains only on Being: response regions rather than wasting gradient capacity on user turns and BK blocks, and replaces the blunt divide-by-penalty repetition suppression with a threshold-aware frequency-based one that preserves natural language while killing runaway loops. Corpus cache must be rebuilt and fine-tuning re-run for the fixes to take effect.
-
-### Fix 1 — EOS at `\n---\n` boundaries + EOS appended per dialogue example
-
-**Problem:** The fine-tune format uses `\n---\n` between examples (`being_dataset_gen.py` line 596: `"\n---\n".join(train_text)`). BPE encoded those dashes as plain bytes. The model never learned "---" was a hard stop, so at generation time nothing signalled end-of-response — hence fragment bleed.
-
-**`build_tokenizer.py BPETokenizer.encode()` — split-on-separator rewrite**
-- Factored the current body into `_encode_chunk()` (pure rename, no logic change).
-- `encode()` now: if `"\n---\n"` appears anywhere in the input, splits on it, encodes each chunk via `_encode_chunk()`, and inserts `EOS_ID` (token 2) between chunks. No separator present → single-chunk passthrough unchanged.
-- Bare mid-line `"---"` (no surrounding newlines, e.g. "word---word" or "hello --- world") is unaffected and passes through as bytes.
-- Mapping "\n\n---\n\n" style (markdown horizontal rules) does also trigger the split, by accident of substring match — acceptable because that's still a document-boundary signal.
-
-**`dataset.py DialogueDataset.__init__` — explicit EOS per example**
-- The tokenizer change alone does not affect fine-tune data, because `finetune.py` line 230 splits the dialogue file on `"---"` before `DialogueDataset` sees it. Each individual example contains no separator.
-- To close that gap: `DialogueDataset.__init__` now appends `EOS_ID` to every example.
-- Truncation rule updated from `encoded[:seq_len]` to `encoded[:seq_len - 1]` so the EOS still fits on long dialogues (previously the examples most prone to bleed were the ones that got truncated and lost any end-of-response signal).
-- `content_len` defined to exclude the appended EOS, so the existing `y[content_len:] = -1` mask leaves `y[content_len - 1]` (predicts EOS) trainable. Deliberate; verified with concrete traces.
-
-**Off-by-one side-fix:** the old PAD-only mask had `y[content_len - 1]` targeting the first PAD token, which was trainable under `y[content_len:] = -1`. The model was quietly trained to predict PAD after the last real content token. With Fix 1, that slot now holds EOS instead — the signal we actually want.
-
-### Fix 2 — user turn / BK block loss masking
-
-**Problem:** `DialogueDataset` previously only masked PAD positions. Every User: turn token and every `[Background knowledge:]` block token (present in ~29% of examples) was a trainable target. This wastes gradient capacity on predicting user-authored text and background facts, when we only want the model to learn its own Being: responses.
-
-**`dataset.py` — `_build_response_mask()` + integrated masking in `__init__`**
-- Precompute `being_tokens = encode("Being:")` and `user_tokens = encode("User:")` once per dataset. Safe because `encode()` splits on whitespace before BPE work — tokenization of markers in isolation matches tokenization in-context.
-- State-machine walk over the encoded content: `Being:` subsequence flips state to trainable, `User:` flips it back. Marker tokens themselves stay False (we don't train on predicting the marker, only what comes after). State starts False, so BK blocks and any prefix before the first marker are automatically non-trainable.
-- EOS position is trainable iff the preceding content token was in a Being region (i.e. dialogue ends on a Being response, the standard pattern). Truncated/malformed dialogues ending mid-User correctly mark EOS non-trainable.
-- Final `y_mask = torch.tensor(content_mask[1:seq_len+1], dtype=bool)` applied vectorised: `y[~y_mask] = -1`. Subsumes the old PAD-only mask.
-
-**Silent-failure assertion:**
-- `_build_response_mask()` raises `ValueError` if the resulting mask is all-False for non-empty input. This catches silent tokenizer drift: if "Being:"/"User:" ever tokenize differently than expected at dataset-init time, the subsequence match fails and every dialogue produces a zero-gradient sample. Without the assertion, training loss would collapse to NaN with no clearer signal. Error message explicitly points at "tokenizer hasn't changed how it handles these markers".
-- Intentionally also fires on legitimately malformed data (dialogue with no Being: marker at all) — that's a data quality issue worth surfacing loud.
-
-### Fix 3 — frequency penalty replaces divide-by-penalty
-
-**Problem:** `model.py generate()` used `logits[generated] /= penalty` — a blunt instrument that penalises articles and connectives as harshly as runaway loops. Preserves nothing.
-
-**`model.py generate()` — frequency-based suppression**
-- New behavior: count token occurrences in the generated slice via `torch.bincount`. For tokens appearing more than `freq_threshold` times, subtract `penalty_strength * (count - freq_threshold)` from their logits. Tokens at or below threshold: zero penalty.
-- Parameter name `repetition_penalty` preserved for backward-compat. `1.0` stays off. Mapping: `penalty_strength = max(0, repetition_penalty - 1.0)` precomputed once per `generate()` call.
-- New parameter `freq_threshold: int = 2`. Added to signature, not yet exposed via chat CLI — left for a future pass if live tuning proves useful.
-- Numerical effect: old 1.15 produced uniform mild suppression across all repeats. New 1.15 produces near-zero effect at count=3 (barely noticeable), ramping linearly to aggressive suppression at count=20+. Matches the stated goal of "preserve natural language repetition, kill loops".
-- Default `repetition_penalty=1.15` in `ChatConfig` unchanged; post-Zero_v3 tuning may want to bump to `1.25`–`1.3` depending on whether mid-range loops (count 3-5) escape the current threshold. Noted for observation.
-
-### Files Changed
-- `build_tokenizer.py` — `encode()` factored, split-on-separator added
-- `dataset.py` — `DialogueDataset.__init__` rewritten, new `_build_response_mask()` static method with assertion
-- `model.py` — `generate()` signature, docstring, penalty precompute, and penalty block updated
-
-All three parse clean via `ast.parse`. Each fix verified against concrete test cases (separator edge cases for Fix 1, five mask scenarios for Fix 2 including BK blocks and truncated dialogues, arithmetic check for Fix 3 including backward-compat).
-
-### Required Follow-up (user's work)
-
-**Rebuild corpus cache, not the tokenizer itself:**
-- `tokenizer.json` is unchanged (vocabulary and merge rules untouched; only `encode()` behavior changed, and it uses an existing special token).
-- `rm corpus/_corpus_bpe.bin` and `rm corpus/_corpus_bpe.bin.files` — on next run, `StreamingCorpus._load` detects missing cache and re-encodes from .txt files using the new `encode()`.
-
-**Pretraining decision (conditional):**
-- Run `grep -rln $'\n---\n' corpus/` first.
-- If zero hits: the re-encoded cache is byte-identical to the old one; continuing from `step_0032500.pt` is safe.
-- If any hits: some corpus positions now contain `EOS_ID` where they previously contained dash bytes. Fresh pretraining is safer because the existing embedding for token 2 was fit to a near-never-seen token.
-
-**Fine-tuning must re-run regardless:**
-- Both Fix 1 (EOS per example) and Fix 2 (response masking) change DialogueDataset's output. The existing `finetuned_dialogue.pt` was trained without these signals.
-- Run command matches Session 22: `python finetune.py --checkpoint <base> --freeze-layers 8 --lora-rank 8 --corpus-mix-ratio 0.15 --epochs 2 --lr 3e-5 --corpus-dir corpus`
-
-### Observations for Future Sessions
-
-**Tuning check post-Zero_v3:** if generation produces mid-range loops like "I'm here. I'm here. I'm here." (count=3 per token), the `repetition_penalty=1.15` default may be too permissive. Bumping to 1.25–1.3 or adjusting `freq_threshold` to 1 are the levers.
-
-**Exposing `freq_threshold` via chat CLI:** trivial addition to chat.py's command table (e.g. `/freqthresh <int>`), not done in this session to keep scope minimal. Worth adding if live tuning proves useful during Zero_v3 chat testing.
-
-**Mask performance:** per-dialogue mask construction at `__init__` is O(len × marker_len). For 24k examples averaging ~500 tokens, roughly 12M ops — negligible. Confirming no need for optimization.
-
----
-
-## Session 23 — Third Code Audit: /teach Parsing, Train.py Robustness, Generate() Position Guard
-
-### Summary
-Mid-training audit during the Zero_v2 CUSTOM run (~step 13.5k, val 2.15). Six bugs fixed across `chat.py`, `train.py`, `model.py`, and `dataset.py`. Two known issues deferred with documented reasoning. Several observations flagged for a future /teach UX design session.
-
-### Bugs Fixed
-
-**`chat.py parse_fact()` — multi-sentence /teach silently stored as one value (moderate)**
-- `/teach Paris is the capital of France. What's your take?` stored `paris = Capital of france. What's your take`, treating trailing commentary as part of the value. Added first-sentence truncation via `re.split(r'(?<=[.!?])\s+', text, maxsplit=1)` before pattern matching. Documented the abbreviation caveat (`F. Scott Fitzgerald` will truncate at the period — users can rephrase).
-
-**`chat.py parse_fact()` — over-greedy `^i am (.+)$` hijacked unrelated statements into `user_name` (critical)**
-- Session 22 removed this pattern from `parse_autonomous_fact` but missed it in `parse_fact` (the `/teach` path). `/teach I am learning guitar` was storing `user_name = Learning guitar`. Removed the pattern. Users can still set their name via `my name is X` or `call me X`. Side effect: `/teach I am Devin` no longer stores the name; a tightened `^i am ([A-Z][a-z]+)$` pattern would restore that cleanly, deferred to the /teach UX session.
-
-**`train.py` — `best_val_loss` reset to infinity on every launch (moderate)**
-- `step_best.pt` was persisted on disk via Session 22's fix, but `best_val_loss` in memory was always initialised to `float("inf")`. After a resume, the next validation trivially beat infinity and overwrote a potentially-genuine earlier best with a worse checkpoint. Fixed by initialising `best_val_loss` in the resume block and restoring from `step_best.pt`'s stored `loss` field if the file exists. Guarded against corrupted loss values (`None`, missing, non-numeric).
-
-**`train.py` — `NameError` if resume step ≥ `max_steps` (moderate)**
-- The final `save_checkpoint(..., step_loss, ...)` call at end-of-train referenced a variable only defined inside the loop body. Resuming a finished run (even accidentally) would crash. Fixed by seeding `step = start_step` and `step_loss = 0.0` before the loop so the final save works whether the loop runs zero, one, or many iterations.
-
-**`model.py generate()` — position embedding out-of-range crash on first decode after full-context prefill (critical-latent)**
-- If a caller passed `idx.shape[1] == context_len`, prefill filled the cache to `context_len`, then the first decode iteration called `pos_emb[context_len]` which is out of range (valid: 0 to `context_len - 1`). The cache-trim guard was at the END of the decode loop — dead guard for iteration one. `chat.py` manually budgeted `max_ctx = context_len - max_new_tokens - 4` externally, which prevented the crash, but the guard lived in the wrong place and any other caller (finetune's probe samples, train's probe samples, future GUI, test harness) was exposed. Moved the trim to the TOP of the decode loop so it fires before every `_forward_cached` call including the first.
-
-**`dataset.py` — deleted unused `CorpusDataset` class**
-- Grep confirmed no external references (only the class definition itself and a historical CHANGELOG mention). `StreamingCorpus` and `DialogueDataset` are the actual load paths. ~22 lines of dead code removed.
-
-### Deferred (documented, not fixed)
-
-**`train.py` — latent `torch.compile` state_dict prefix issue**
-- If `torch.compile` successfully wraps the model, saved state_dicts carry `_orig_mod.` key prefixes that `chat.py` / `finetune.py` cannot load. The compile probe currently fails on the Windows box (`test_fn` raises during trace), so the save path is safe in practice. Adding an unwrap layer that can't be tested in-situ carries more risk than the bug. Documented as a multi-line comment near the training loop's save region so the finding isn't lost. If compile ever starts working: `underlying = model._orig_mod if hasattr(model, '_orig_mod') else model; save underlying.state_dict()`.
-
-**`chat.py _clean()` — `\n\n` stop marker truncates multi-paragraph output**
-- Any response with a natural paragraph break is cut at the first blank line. Zero_v1 rarely produces multi-paragraph replies due to dialogue template contamination, and changing stop markers mid-Zero_v2-training risks fragment bleed getting worse. Documented inline as a one-line comment. Revisit only if Zero_v2 produces legitimate long-form output getting cut.
-
-### Documentation Comments Added
-
-- `train.py` resume block: `TODO: ckpt is loaded twice here (once in this block, once in the optimizer restore below). Could be cached and reused. Low priority.` Observation flagged during the audit; on a 268M-param Zero_v2 checkpoint with 8-bit AdamW state this is probably 1-2 GB of wasted startup I/O per launch.
-- `train.py` training loop head: Multi-line comment documenting the latent torch.compile unwrap pattern for future reference.
-- `chat.py _clean()`: One-line comment on the `\n\n` stop marker documenting the multi-paragraph ceiling.
-- `chat.py parse_fact()`: Docstring updated with sentence-truncation behaviour and the abbreviation caveat; inline note that `^i am (.+)$` was removed mirroring Session 22's autonomous-side fix.
-
-### Observations for Future Sessions
-
-**`/teach` UX redesign (deferred to a separate session)**
-- Storage and conversation are entangled in `cmd_teach` — every teach produces a generated reply and appends the exchange to history, even when parse succeeds and storage is the only goal.
-- Generation runs even on successful parse, producing sometimes-awkward replies because teach phrasing is declarative.
-- Generic `X is Y` patterns are permissively greedy by design, which combined with the (now-fixed) multi-sentence and `i am` bugs let significant junk through.
-- No feedback on what was stored — users see only the generated reply. The most impactful fix would be a one-line confirmation on successful parse (`Stored: user_likes = Hiking`) so failed parses don't silently fall through to generation.
-
-**`/teach I am <Name>` no longer works after Session 23**
-- Side effect of removing the greedy pattern. A tightened `(r'^i am ([A-Z][a-z]+)$', "user_name")` anchored to a single capitalised word would restore the intentional case without reintroducing the greedy capture. One-line add, deferred to the /teach UX session.
-
-**Leading-greeting parse failure in `/teach`**
-- `/teach Hello! Paris is the capital of France` now returns `None` because first-sentence truncation keeps only `Hello!`. `parse_autonomous_fact` strips greetings; `parse_fact` doesn't. Consistency fix worth considering during the /teach UX session.
-
-**`being_dataset_gen.py` v10.5 not deeply audited**
-- Grep-checked the separator, generator dispatch coverage, and progress-bar scale issues from Session 20 — all appear fixed. A deeper category-by-category audit (especially the 10 previously-silent categories) would be worth a pass before the next Zero_v3 dialogue dataset build.
-
-### Verification
-All four edited files parse cleanly via `ast.parse`. `parse_fact()` tested against 13 input cases (multi-sentence, greedy-am, name-set, abbreviation caveat, empty/whitespace-only, greeting-prefix, standard world-knowledge, multi-fact in one string) — all produce expected results. No behavioural change for callers that were already within budget (chat.py); only previously-crashing or previously-corrupting paths are now correct.
-
----
-
 ## Session 1 — Initial Build
 
 ### Added
@@ -735,9 +593,6 @@ Total: ~4,000+ repetitive template instances replaced with diverse alternatives.
 - Literary cross-contamination visible but expected to resolve with cleaned dialogue in Phase 2
 - Val loss oscillating between 1.52–1.61 after step 14.5k — normal plateau behavior at this stage
 
-### Recommendation
-Stop current training run. Replace both dialogue files in corpus with the cleaned versions. Delete stale cache (`rm corpus/_corpus_bpe.bin corpus/_corpus_bpe.files`). Restart training from step 0 with the clean dialogue, OR continue to 50k and fine-tune with the cleaned dialogue only.
-
 ---
 
 ## Session 22 — Zero_v1 Completion + CUSTOM Preset Launch + Chat.py Memory Fixes
@@ -795,17 +650,117 @@ Extensive multi-hour philosophical conversations with Zero_v1 produced:
 **Self-memory unbounded growth (moderate)**
 - Every "I think X", "I feel Y", "I wonder Z" from the being was being stored, leading to memory bloat over long conversations. Added `MAX_SELF_ENTRIES = 8` cap (excluding `self_name`). Tightened trivial-value filter to include "right", "wrong", "curious", "glad", "afraid", "sure", "not sure". Raised minimum value length from 2 chars to 10 chars plus 3-word minimum.
 
-### Intentional Design (not a bug)
+---
 
-**`user_name` and `being_name` are set-once by design**
-- Once either name is stored in `memory.json`, autonomous parsing will not overwrite it. A user saying "my name is Bob" at the start of a session, then later saying "my name is Robert," keeps the original "Bob" stored. Same for the being's name. This prevents accidental identity drift from phrases matched out of context. If a user genuinely wants to rename themselves or the being, they can edit `memory.json` directly and tell the being about the change in conversation.
+## Session 23 — Third Code Audit: /teach Parsing, Train.py Robustness, Generate() Position Guard
 
-**Being-name display caused user-name confusion (UX)**
-- When being_name was injected into the `[Background knowledge:]` block without being in any training examples, the model treated the name as another address-label for the user. Fixed across two fronts: (1) skipped being_name from the BK block temporarily while dialogue training caught up, (2) added new dialogue examples covering the being's own name in the BK block so the model learns the pattern. Terminal display still shows the being's name as the response label via a new `display_name` attribute, keeping the conversation visually correct even during the gap.
+### Summary
+Mid-training audit during the Zero_v2 CUSTOM run (~step 13.5k, val 2.15). Six bugs fixed across `chat.py`, `train.py`, `model.py`, and `dataset.py`. Two known issues deferred with documented reasoning. Several observations flagged for a future /teach UX design session.
 
-### Observations & Lessons
+### Bugs Fixed
 
-- Train loss below 1.0 at step 27k on LG model was not "memorization of small subset" but normal deep training on a fully-seen corpus. Val loss plateau at step 15k was the corpus ceiling, not a model ceiling — same plateau occurred in the 97M MED run on similar corpus.
-- Fragment bleed is stubborn. Even with cleaned dialogue templates, 2 epochs of fine-tuning on 37k examples produces a model that generates coherent first sentences followed by trailing partial phrases pulled from training data.
-- Corpus-mix-ratio 0.15 during fine-tuning requires the corpus_clean/ folder to exist OR `--corpus-dir corpus` to be passed explicitly. An empty corpus_clean/ folder silently disables mixing (falls through the exists-check but finds no .txt files). Worth documenting in finetune.py help text.
-- Stop/continue cycle on training can reveal lower VRAM baseline than initial run. Zero_v2 dropped from 6.8-7.2GB to 5.2-5.5GB after a single restart, suggesting fragmentation cleanup. Baseline holds steady for 10+ hours, so the new headroom appears real.
+**`chat.py parse_fact()` — multi-sentence /teach silently stored as one value (moderate)**
+- `/teach Paris is the capital of France. What's your take?` stored `paris = Capital of france. What's your take`, treating trailing commentary as part of the value. Added first-sentence truncation via `re.split(r'(?<=[.!?])\s+', text, maxsplit=1)` before pattern matching. Documented the abbreviation caveat (`F. Scott Fitzgerald` will truncate at the period — users can rephrase).
+
+**`chat.py parse_fact()` — over-greedy `^i am (.+)$` hijacked unrelated statements into `user_name` (critical)**
+- Session 22 removed this pattern from `parse_autonomous_fact` but missed it in `parse_fact` (the `/teach` path). `/teach I am learning guitar` was storing `user_name = Learning guitar`. Removed the pattern. Users can still set their name via `my name is X` or `call me X`. Side effect: `/teach I am Devin` no longer stores the name; a tightened `^i am ([A-Z][a-z]+)$` pattern would restore that cleanly, deferred to the /teach UX session.
+
+**`train.py` — `best_val_loss` reset to infinity on every launch (moderate)**
+- `step_best.pt` was persisted on disk via Session 22's fix, but `best_val_loss` in memory was always initialised to `float("inf")`. After a resume, the next validation trivially beat infinity and overwrote a potentially-genuine earlier best with a worse checkpoint. Fixed by initialising `best_val_loss` in the resume block and restoring from `step_best.pt`'s stored `loss` field if the file exists. Guarded against corrupted loss values (`None`, missing, non-numeric).
+
+**`train.py` — `NameError` if resume step ≥ `max_steps` (moderate)**
+- The final `save_checkpoint(..., step_loss, ...)` call at end-of-train referenced a variable only defined inside the loop body. Resuming a finished run (even accidentally) would crash. Fixed by seeding `step = start_step` and `step_loss = 0.0` before the loop so the final save works whether the loop runs zero, one, or many iterations.
+
+**`model.py generate()` — position embedding out-of-range crash on first decode after full-context prefill (critical-latent)**
+- If a caller passed `idx.shape[1] == context_len`, prefill filled the cache to `context_len`, then the first decode iteration called `pos_emb[context_len]` which is out of range (valid: 0 to `context_len - 1`). The cache-trim guard was at the END of the decode loop — dead guard for iteration one. `chat.py` manually budgeted `max_ctx = context_len - max_new_tokens - 4` externally, which prevented the crash, but the guard lived in the wrong place and any other caller (finetune's probe samples, train's probe samples, future GUI, test harness) was exposed. Moved the trim to the TOP of the decode loop so it fires before every `_forward_cached` call including the first.
+
+**`dataset.py` — deleted unused `CorpusDataset` class**
+- Grep confirmed no external references (only the class definition itself and a historical CHANGELOG mention). `StreamingCorpus` and `DialogueDataset` are the actual load paths. ~22 lines of dead code removed.
+
+### Deferred (documented, not fixed)
+
+**`train.py` — latent `torch.compile` state_dict prefix issue**
+- If `torch.compile` successfully wraps the model, saved state_dicts carry `_orig_mod.` key prefixes that `chat.py` / `finetune.py` cannot load. The compile probe currently fails on the Windows box (`test_fn` raises during trace), so the save path is safe in practice. Adding an unwrap layer that can't be tested in-situ carries more risk than the bug. Documented as a multi-line comment near the training loop's save region so the finding isn't lost. If compile ever starts working: `underlying = model._orig_mod if hasattr(model, '_orig_mod') else model; save underlying.state_dict()`.
+
+**`chat.py _clean()` — `\n\n` stop marker truncates multi-paragraph output**
+- Any response with a natural paragraph break is cut at the first blank line. Zero_v1 rarely produces multi-paragraph replies due to dialogue template contamination, and changing stop markers mid-Zero_v2-training risks fragment bleed getting worse. Documented inline as a one-line comment. Revisit only if Zero_v2 produces legitimate long-form output getting cut.
+
+---
+
+## Session 24 — Fragment Bleed Remediation: EOS, Response Masking, Frequency Penalty
+
+### Summary
+Three targeted fixes addressing fragment bleed and trailing junk in Zero_v2 output. Makes the model actually learn end-of-response (it previously saw `---` only as plain text), trains only on Being: response regions rather than wasting gradient capacity on user turns and BK blocks, and replaces the blunt divide-by-penalty repetition suppression with a threshold-aware frequency-based one that preserves natural language while killing runaway loops. Corpus cache must be rebuilt and fine-tuning re-run for the fixes to take effect.
+
+### Fix 1 — EOS at `\n---\n` boundaries + EOS appended per dialogue example
+
+**Problem:** The fine-tune format uses `\n---\n` between examples (`being_dataset_gen.py` line 596: `"\n---\n".join(train_text)`). BPE encoded those dashes as plain bytes. The model never learned "---" was a hard stop, so at generation time nothing signalled end-of-response — hence fragment bleed.
+
+**`build_tokenizer.py BPETokenizer.encode()` — split-on-separator rewrite**
+- Factored the current body into `_encode_chunk()` (pure rename, no logic change).
+- `encode()` now: if `"\n---\n"` appears anywhere in the input, splits on it, encodes each chunk via `_encode_chunk()`, and inserts `EOS_ID` (token 2) between chunks. No separator present → single-chunk passthrough unchanged.
+- Bare mid-line `"---"` (no surrounding newlines, e.g. "word---word" or "hello --- world") is unaffected and passes through as bytes.
+- Mapping "\n\n---\n\n" style (markdown horizontal rules) does also trigger the split, by accident of substring match — acceptable because that's still a document-boundary signal.
+
+**`dataset.py DialogueDataset.__init__` — explicit EOS per example**
+- The tokenizer change alone does not affect fine-tune data, because `finetune.py` line 230 splits the dialogue file on `"---"` before `DialogueDataset` sees it. Each individual example contains no separator.
+- To close that gap: `DialogueDataset.__init__` now appends `EOS_ID` to every example.
+- Truncation rule updated from `encoded[:seq_len]` to `encoded[:seq_len - 1]` so the EOS still fits on long dialogues (previously the examples most prone to bleed were the ones that got truncated and lost any end-of-response signal).
+- `content_len` defined to exclude the appended EOS, so the existing `y[content_len:] = -1` mask leaves `y[content_len - 1]` (predicts EOS) trainable. Deliberate; verified with concrete traces.
+
+**Off-by-one side-fix:** the old PAD-only mask had `y[content_len - 1]` targeting the first PAD token, which was trainable under `y[content_len:] = -1`. The model was quietly trained to predict PAD after the last real content token. With Fix 1, that slot now holds EOS instead — the signal we actually want.
+
+### Fix 2 — user turn / BK block loss masking
+
+**Problem:** `DialogueDataset` previously only masked PAD positions. Every User: turn token and every `[Background knowledge:]` block token (present in ~29% of examples) was a trainable target. This wastes gradient capacity on predicting user-authored text and background facts, when we only want the model to learn its own Being: responses.
+
+**`dataset.py` — `_build_response_mask()` + integrated masking in `__init__`**
+- Precompute `being_tokens = encode("Being:")` and `user_tokens = encode("User:")` once per dataset. Safe because `encode()` splits on whitespace before BPE work — tokenization of markers in isolation matches tokenization in-context.
+- State-machine walk over the encoded content: `Being:` subsequence flips state to trainable, `User:` flips it back. Marker tokens themselves stay False (we don't train on predicting the marker, only what comes after). State starts False, so BK blocks and any prefix before the first marker are automatically non-trainable.
+- EOS position is trainable iff the preceding content token was in a Being region (i.e. dialogue ends on a Being response, the standard pattern). Truncated/malformed dialogues ending mid-User correctly mark EOS non-trainable.
+- Final `y_mask = torch.tensor(content_mask[1:seq_len+1], dtype=bool)` applied vectorised: `y[~y_mask] = -1`. Subsumes the old PAD-only mask.
+
+**Silent-failure assertion:**
+- `_build_response_mask()` raises `ValueError` if the resulting mask is all-False for non-empty input. This catches silent tokenizer drift: if "Being:"/"User:" ever tokenize differently than expected at dataset-init time, the subsequence match fails and every dialogue produces a zero-gradient sample. Without the assertion, training loss would collapse to NaN with no clearer signal. Error message explicitly points at "tokenizer hasn't changed how it handles these markers".
+- Intentionally also fires on legitimately malformed data (dialogue with no Being: marker at all) — that's a data quality issue worth surfacing loud.
+
+### Fix 3 — frequency penalty replaces divide-by-penalty
+
+**Problem:** `model.py generate()` used `logits[generated] /= penalty` — a blunt instrument that penalises articles and connectives as harshly as runaway loops. Preserves nothing.
+
+**`model.py generate()` — frequency-based suppression**
+- New behavior: count token occurrences in the generated slice via `torch.bincount`. For tokens appearing more than `freq_threshold` times, subtract `penalty_strength * (count - freq_threshold)` from their logits. Tokens at or below threshold: zero penalty.
+- Parameter name `repetition_penalty` preserved for backward-compat. `1.0` stays off. Mapping: `penalty_strength = max(0, repetition_penalty - 1.0)` precomputed once per `generate()` call.
+- New parameter `freq_threshold: int = 2`. Added to signature, not yet exposed via chat CLI — left for a future pass if live tuning proves useful.
+- Numerical effect: old 1.15 produced uniform mild suppression across all repeats. New 1.15 produces near-zero effect at count=3 (barely noticeable), ramping linearly to aggressive suppression at count=20+. Matches the stated goal of "preserve natural language repetition, kill loops".
+- Default `repetition_penalty=1.15` in `ChatConfig` unchanged; post-Zero_v3 tuning may want to bump to `1.25`–`1.3` depending on whether mid-range loops (count 3-5) escape the current threshold. Noted for observation.
+
+### Files Changed
+- `build_tokenizer.py` — `encode()` factored, split-on-separator added
+- `dataset.py` — `DialogueDataset.__init__` rewritten, new `_build_response_mask()` static method with assertion
+- `model.py` — `generate()` signature, docstring, penalty precompute, and penalty block updated
+
+All three parse clean via `ast.parse`. Each fix verified against concrete test cases (separator edge cases for Fix 1, five mask scenarios for Fix 2 including BK blocks and truncated dialogues, arithmetic check for Fix 3 including backward-compat).
+
+### Required Follow-up (user's work)
+
+**Rebuild corpus cache, not the tokenizer itself:**
+- `tokenizer.json` is unchanged (vocabulary and merge rules untouched; only `encode()` behavior changed, and it uses an existing special token).
+- `rm corpus/_corpus_bpe.bin` and `rm corpus/_corpus_bpe.bin.files` — on next run, `StreamingCorpus._load` detects missing cache and re-encodes from .txt files using the new `encode()`.
+
+**Pretraining decision (conditional):**
+- Run `grep -rln $'\n---\n' corpus/` first.
+- If zero hits: the re-encoded cache is byte-identical to the old one; continuing from `step_0032500.pt` is safe.
+- If any hits: some corpus positions now contain `EOS_ID` where they previously contained dash bytes. Fresh pretraining is safer because the existing embedding for token 2 was fit to a near-never-seen token.
+
+**Fine-tuning must re-run regardless:**
+- Both Fix 1 (EOS per example) and Fix 2 (response masking) change DialogueDataset's output. The existing `finetuned_dialogue.pt` was trained without these signals.
+- Run command matches Session 22: `python finetune.py --checkpoint <base> --freeze-layers 8 --lora-rank 8 --corpus-mix-ratio 0.15 --epochs 2 --lr 3e-5 --corpus-dir corpus`
+
+### Observations for Future Sessions
+
+**Tuning check post-Zero_v3:** if generation produces mid-range loops like "I'm here. I'm here. I'm here." (count=3 per token), the `repetition_penalty=1.15` default may be too permissive. Bumping to 1.25–1.3 or adjusting `freq_threshold` to 1 are the levers.
+
+**Exposing `freq_threshold` via chat CLI:** trivial addition to chat.py's command table (e.g. `/freqthresh <int>`), not done in this session to keep scope minimal. Worth adding if live tuning proves useful during Zero_v3 chat testing.
+
+**Mask performance:** per-dialogue mask construction at `__init__` is O(len × marker_len). For 24k examples averaging ~500 tokens, roughly 12M ops — negligible. Confirming no need for optimization.
