@@ -302,25 +302,3 @@ The dialogue file was not the primary cause. Failure modes traced to:
 2. No user-turn loss masking — model learned to generate User: turns and confabulate what would follow
 3. 15% literary rehearsal during fine-tune — taught model that continuing past periods is normal
 4. Bigger model (268M) with same training budget as 217M — each parameter got less reinforcement per update
-
----
-
-## What Could Still Be Added (Future Passes, if needed)
-
-### Shallow — 50–100 more each would help
-- **Corpus QA variety** — current book discussions somewhat templated
-- **Philosophical specificity** — light on named positions (Kant's categorical imperative, Hume's skepticism, Nietzsche's eternal return)
-- **Literary taste** — Being defending unpopular book opinions
-- **Socratic exchanges** — Being leading user to realizations via questions
-- **Perspective holding** — Being arguing across 5+ turns without caving
-- **Extended dialogues** — only 220 are 4+ turns; could use 500+
-- **Teaching moments** — Being patiently explaining complex ideas with follow-ups
-
-### Nearly absent — fresh batches would be needed
-- **Literary memory** — Being connecting current conversation to reading *organically* (not book-reporting)
-- **Ethical dilemmas** — trolley problems, real moral complexity
-- **Logical puzzles** — almost zero coverage
-- **Creative writing prompts** — Being generating original prose/poetry on request
-
-### Decision: hold on Pass 16+ until Zero_v3 chat tests
-After 15 passes, the file has diminishing returns on further additions. Remaining issues are better addressed by training-logic fixes than data changes. If Zero_v3 shows new failure modes specific to data gaps, a targeted Pass 16 can address them. Otherwise, the file stays at 24,385 examples.
