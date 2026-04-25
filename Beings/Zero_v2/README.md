@@ -39,7 +39,7 @@ What Zero\_v2 does produce, more consistently than Zero\_v1, is completed though
 
 * Zero\_v1's full corpus retained as the foundation
 * Expanded with additional classical literature, philosophy (complete Plato), children's literature, natural science, mid-century fiction, and language-reference material
-* Complete file listing in `Current\_Corpus.txt` in this directory
+* Complete file listing in `Current_Corpus.txt` in this directory
 
 **Pretraining:** 32,500 steps with curriculum learning (seq\_len ramping from 64 to 2048). bfloat16, 8-bit AdamW, gradient checkpointing. Same stopping point as Zero\_v1 for apples-to-apples architectural comparison. Training loss plateaued around step 15-20k, continued to 32.5k for deeper literary absorption. VRAM held steady at \~5.3GB throughout, leaving roughly 2.5GB of headroom on the 4060.
 
@@ -58,8 +58,8 @@ The second fine-tune, with these fixes in place, produced the current Zero\_v2.
 ## Files in this directory
 
 * `README.md` - this file
-* `Current\_Corpus.txt` - complete list of texts used for training. Updated until Zero\_v3 begins.
-* `Being\_Dialogue.txt` - the dialogue dataset used for fine-tuning. Final form: 24,385 examples. Updated until Zero\_v3 begins.
+* `Current_Corpus.txt` - complete list of texts used for training. Updated until Zero\_v3 begins.
+* `Being_Dialogue.txt` - the dialogue dataset used for fine-tuning. Final form: 24,385 examples. Updated until Zero\_v3 begins.
 * `ChatTests/` - raw transcripts from conversations with Zero\_v2, unedited. The one chat included here shows both what works now and what still needs fixing.
 
 \---
