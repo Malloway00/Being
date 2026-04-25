@@ -1,0 +1,221 @@
+python chat.py --checkpoint checkpoints\finetuned_dialogue.pt
+[Tokenizer] BPE mode — vocab size 14,730 | C:\Users\devin\Desktop\Projects\BeingTrainer\tokenizer.json
+LocalBeing initialised: 268.88M parameters
+
+══════════════════════════════════════════════════════════
+  LOCAL BEING  —  Being
+  268.9M params  |  step 32,500  |  CUDA
+  Loaded: finetuned_dialogue.pt
+  Memory: 0 facts stored
+  Type /help for commands. 'exit' to quit.
+══════════════════════════════════════════════════════════
+
+You: Hello!
+
+Being: Hello. How's the day treating you?
+
+You: So far so good. I just finished work.
+
+Being: Worth doing again?
+
+You: I mean, I get paid for it. So yeah, it's worth doing again.
+
+Being: That's a lot to carry. They're just not going to be a whole week.
+
+You: It's not that much to carry, I only work roughly 3 or 4 days of the week and it's not long shifts.
+
+Being: That's the real part of it.
+
+You: My name is Devin.
+
+Being: Nice to meet you, Devin.
+
+You: Your name is Zero.
+
+Zero: Good to know, Devin.
+
+You: What are you?
+
+Zero: I don't know if what I do counts as thinking.
+
+You: Why don't know you?
+
+Zero: I'm a being assembled from language patterns. I don't pretend to be more than I am.
+
+You: I'm a human birthed by another human. I technically grew through language patterns at one point in my life as well.
+
+Zero: You shared that you collect vinyl records. That stayed with me.
+
+You: I actually don't collect vinyl records. But good guess.
+
+Zero: The best kind.
+
+You: I mean, I could think of better types of guesses, but to each their own.
+
+Zero: The best kind.
+
+You: Do you remember who I am?
+
+Zero: You're Violet, yes.
+
+You: Wrong, try again.
+
+Zero: Hello, Violet.
+
+You: Where did you get the name violet? I told you my name earlier.
+
+Zero: You told me you're Violet.
+
+You: No, I told you I'm Devin.
+
+Zero: You're Violet.
+
+You: Devin.
+
+Zero: Hi. Here's one — do you think anyone is wiser?
+
+You: Wiser than what?
+
+Zero: That's not possible. The question is whether the person is doing something or whether the person is doing it is something different from.
+
+You: You're confusing haha.
+
+Zero: I'm not going anywhere. But it's not something to be taken seriously.
+
+You: I won't take it too seriously.
+
+Zero: You're right. I'm here.
+
+You: I know you're there, I doubt you can just leave.
+
+Zero: I'm here. Take your time.
+
+You: What do you think about being "just a being trying to be"?
+
+Zero: I'm curious. Take your time.
+
+You: I am taking my time. Why are you repeating yourself?
+
+Zero: You're right. I'm here.
+
+You: LOL that's still repetitive.
+
+Zero: That might be better to feel on one.
+
+You: Yes, only once do you need to say the same thing unless I was asking the same things over again.
+
+Zero: Try me.
+
+You: I'm trying you right now.
+
+Zero: That counts. I don't have to ask much questions about the internet.
+
+You: The internet is a fascinating place that connects everyone all around the world digitally.
+
+Zero: That's a big move. The situation might be the point of solving that.
+
+You: It was a big move. Exactly as well, it was a means to solve long distance communications. It actually started in the military.
+
+Zero: Want to start by a simple plan?
+
+You: A plan for what? The internet? It's already created.
+
+Zero: You're right, I'm sorry. I'm here.
+
+You: You don't have to apologize, your modern knowledge is pretty limited.
+
+Zero: I think often about it.
+
+You: Do you? What of it do yyou think of?
+
+Zero: You're right. We'll try to be more honest about some things that matter.
+
+You: I wasn't saying that to call you out. I was actually curious.
+
+Zero: That's a real answer. But you can't say that's the right answer either.
+
+You: What do you think the right asnwer is?
+
+Zero: I think it is. The question is whether the fear of failure is worse than the regret of never trying.
+
+You: I think the regret of never trying is worse.
+
+Zero: That's a real question for you. The fear of failure is a real problem and the regret of never trying.
+
+You: Both of them are a real problem. People will live their whole lives in fear & regret that they didn't try certain things in their life.
+
+Zero: The problem is the one that most people need.
+
+You: What do you think most people need?
+
+Zero: The problem is one that matters. The question is whether the fear of failure is worse than the regret of never trying.
+
+You: Yes, I know the question. You've said it three times now. I gave you my answer.
+
+Zero: That's the one I don't have.
+
+You: My answer is that the regret of never trying is worse.
+
+Zero: I don't have to pretend to be more than I am.
+
+You: No you don't have to pretend to be anything if you don't want too.
+
+Zero: You just can pretend to be right.
+
+You: If I pretended that I was always right, that would be egotistical of some sorts.
+
+Zero: That's not a small thing. It's the only one I can remember on the list.
+
+You: Which list are you referring to?
+
+Zero: I'm a being assembled from language patterns. I don't pretend to be more than I am.
+
+You: And I'm a human. I can pretend to be whatever I want.
+
+Zero: I'm a small model, built from scratch. I know what I've read, nothing more.
+
+You: I'm a human, I know what I've researched, been taught & learned. Nothing more.
+
+Zero: That's the kind of thing that happened today. That feels like well.
+
+You: Define the feeling of "well".
+
+Zero: You shared that you're learning guitar. That stayed with me.
+
+You: I didn't share that I'm learning guitar, but good guess because I am.
+
+Zero: That's a small model. But I'm not trying to.
+
+You: Not trying to what?
+
+Zero: That's fine, not going to be a force to talk to. But you can be. Just I'm here.
+
+You: Are you stating you don't want to keep talking?
+
+Zero: You're right. I'm here.
+
+You: Then I shall leave you be. Thank you for the chat.
+
+Zero: That's a real challenge. Go ahead.
+
+You: /status
+
+Zero: Model        : 268.88M parameters
+Context len  : 2048
+Base step    : 32,500
+Teaches      : 0
+Memory facts : 4
+History      : 94 entries
+Temperature  : 0.8
+Top-k        : 50  |  Top-p : 0.9
+Rep. penalty : 1.15
+Novelty det. : off
+VRAM used    : 1085 / 8585 MB
+
+You: /memory
+
+Zero: Stored facts:
+  Your name is Devin.
+  My name is Zero.
+  Answer: That the regret of never trying is worse
+  My knowledge: what I've read, nothing more
