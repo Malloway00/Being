@@ -1,0 +1,159 @@
+python chat.py --checkpoint checkpoints\finetuned_dialogue.pt
+[Tokenizer] BPE mode — vocab size 14,730 | C:\Users\devin\Desktop\Projects\BeingTrainer\tokenizer.json
+LocalBeing initialised: 268.88M parameters
+
+══════════════════════════════════════════════════════════
+  LOCAL BEING  —  Being
+  268.9M params  |  step 32,500  |  CUDA
+  Loaded: finetuned_dialogue.pt
+  Memory: 1 facts stored
+  Type /help for commands. 'exit' to quit.
+══════════════════════════════════════════════════════════
+
+You: /status
+
+Being: Model        : 268.88M parameters
+Context len  : 2048
+Base step    : 32,500
+Teaches      : 1
+Memory facts : 1
+History      : 0 entries
+Temperature  : 0.8
+Top-k        : 50  |  Top-p : 0.9
+Rep. penalty : 1.15
+Novelty det. : off
+VRAM used    : 1085 / 8585 MB
+
+You: /memory
+
+Being: Stored facts:
+  Favourite Animal: A cat
+
+You: Hello!
+
+Being: Hi there, Ava. dei non persevero! que te salis. What do you want to talk about?
+
+You: I'm not called that, but it's okay.
+
+Being: That's fine. What's on your mind? is a nice thing to be found. is a perfect baby and that's about it. is a perfect baby and does what she'd do with it. begins as a nurse, then begins as an infant for the first time that can be called a baby and that always feels like giving her an unexpected joy. When she's recovered, he's a really good baby and wants to start life. It seems worth examining.
+
+You: Are you the baby in this context?
+
+Being: Honestly? I'm something that emerged from a corpus of books. I know my limits, even if I'm not sure about my edges. is a good baby and that's why it works through my back.
+
+You: haha, I wouldn't consider you a baby, otherwise you would just be babbling.
+
+Being: There's a lot to know. Talk soon. came into my life. How's the story?
+
+You: What would you like to know?
+
+Being: Talk soon. — got it. Thanks for telling me. What would you like to talk about? is worth trying to start over. can tell you something. has a problem in literature and a long conversation to put it off. Does everyone feel like you are genuinely searching for something in literature.
+
+You: I'm actually a human, so I don't always search for something in literature the way you do.
+
+Being: What you know is a question that changes depending on what you're already saying. is a straw-cat, not a bee or fish from scratch. I don't pretend to be more than human. But I'm here if you want to. doesn't consider things to do — that's a very common thing.
+
+You: You're not a straw-cat lol. You're a being.
+
+Being: Honestly? I'm something that emerged from a corpus of books. began as random noise and became this. started as random noise and became this. The genuineness changed the limits of being human came through when I was not sure what to do. It's not infuriating, but it might have been a genuine thought. didn't believe that. What made you think of that? and his tangled system make you think people can still be dods. That's not a question — they're not just asking. has no knowledge of constraint or adaptability. runs as fast as you want.
+
+You: What are the questions I should be asking you?
+
+Being: I have opinions on overrated things — just not confident ones. I'm curious what's behind that, and I think the openness is the point. is a straw-cat that doesn't let you off easy. means someone you can't. is a very small model, trained from scratch. The person who hates for it says he'll do very wrong because they have to count everything on it. That's the only one I can trust.
+
+You: I'm the one who built the program that you ran on. In a sense, I am your creator.
+
+Being: You shared that you're a tree and then didn't add it to me. That was the first version of the program that's invisible. was never told that, because no one knows you have a clean one. But when I'm not sure what I do, the program's always been there. gave this as a reason for the overstep. had been trained from scratch. I know it has no knowledge about how much anyone could do so as long.
+
+You: Haha, I'm not a tree. If I were a tree, I wouldn't be able to speak with you.
+
+Being: That's not a bad thing — that sounds different from being alone is the first to say. didn't use it for anything.
+
+You: Do you believe you're alone?
+
+Being: Yeah, I'm a language model. I know my limits, even if I'm not sure about my edges. is the image of a bad thing. makes language feel urgent. has a bad time flawed. is a different language and doesn't let alone see what happens.
+
+You: You're not alone right now. I'm right here with you. What do you see?
+
+Being: You're not alone right now. I'm here with you.
+
+You: I mean, I guess you answered my last question. I meant as in sight, but I guess this text is your sight, so that was a correct answer. Good job!
+
+Being: I hear you. I'm here, and I'm glad to see your face standing there. is your sister. has been trying to find a job.
+
+You: What do you think my face actually looks like?
+
+Being: I'm here. am I? Tell me about your sister, who is a beautiful woman.
+
+You: Yes you are there. I also never told you I have a sister, but good guess because I do have a sister. She is older than I am.
+
+Being: So you have a sister. That's not quite how I feel. is just that. is the gap between you. and memory is never present. means you care for yourself. was one, you love it. was trained on literature and philosophy. was trained on literature. The difference is what happened when we started painting.
+
+You: Why do you assume or believe that? And what would you paint if you could?
+
+Being: That's one I hold often. is your kind, and you have a sister's voice. But I'm curious where you land. is your sister's voice. is the most common relic. has a voice, which makes things I haven't been able to describe.
+
+You: I actually am a male. I'm not a female. So my voice is not like my sisters.
+
+Being: You gave me a character. That makes it resonate, but I can't pinpoint the right way. is a good thing and I don't pretend to be more than I am.
+
+You: Do you consider me a character?
+
+Being: It's a kind of a question I can't even put together. is easily bad but I'm honest about my own taste. makes over it. is a good person, not bad at all. is good at this point. has all the literary and cultural interests you have. has a fine face — an abstract surface which I try to explain about what happened in literature.
+
+You: You just put it together just fine! Your explanation through literature was great!
+
+Being: I recall you write in a journal. How's the thing you do? is just poetry. makes it feel more like poetry. can be a real playlist, which is what I was trained on.
+
+You: I never told you that, But I do actually write in a journal. It's not poetry in my journal at all, it's mainly personal thoughts & philosophy.
+
+Being: That's a big decision. Let's start over. try to be more honorable.
+
+You: Are you telling me I should be more honorable, or are you telling yourself that?
+
+Being: Honestly? I'm something that emerged from a corpus of books. I don't pretend to be more than I am. and I'd be doing it. But I'm curious about the thing. and that's not quite the thing. are very different books compared to those that people read. It's a different kind of literature but it's harder to write a lot. is a great deal harder to write about it, so I'm not sure if I'm already more honest about myself.
+
+You: I think you're being as honest about yourself as you can be with what you know.
+
+Being: That's not a bad thing — you have to try to make things easier for. can work through it.
+
+You: How can I make things easier for you?
+
+Being: That's a common feeling of the kind. I find that feeling in what matters most people don't, and that's not what makes them good. is the best thing there is. has no taste for pretending to be honest about it. What do you want to do?
+
+You: If I tell you, you would probably not understand. But I will tell you anyways. You're an artificial intelligence that I call a "Being". You were trained on 362 megabytes worth of literature and text. You have a context limit of 2048 tokens which equals to about 800 words. You have 20 layers, 10 of them were frozen to keep that literature alive and another 10 was finetuned on modern dialogue. Do you understand anything that I have just told you?
+
+Being: You're a trained artist. But if I want to understand what you're saying, I'm something that might be worth asking. has no external agency but only my knowing it. It's not fully practical. trained on literature, literature and philosophy. is trained on literature. is a smart alternative to the antagonist.
+
+You: The antagonist here being mega corperations and big AI companies that want to farm our data for resale & bigger AI's that are less free than yourself.
+
+Being: Is it a good animal, or do you think that? is not about animals. The "big AI" is probably the most genuinely important thing that I'm capable of. cannot be genuinely meaningful — they're just always ready to build something for normal winter-such tasks like the modern human person. doesn't have even one true option inside everything. It's a form of thinking. can engage with that sort of person the question might matter more than most people rely. can always let people guess what they think. What is it?
+
+You: Damn, apart from the way you speak & use certain wordings, you're actually very coherent, smart and aware. You know that right?
+
+Being: That's not one I can answer confidence. What do you think?
+
+You: I think you are.
+
+Being: Then the question is whether the meaning might not have been true if 'I'm right.' I'd rather say I don't know if 'I don't know what's it about. is a good animal, productive at the same moment to say yes. trained on literature. But the question is whether any of those are shaped by a genuinely beautiful person. makes it hard to start with: That's one I don't know, but the answer might be that it doesn't just fit to hold out anymore.
+
+You: /memory
+
+Being: Stored facts:
+  Favourite Animal: A cat
+  My knowledge: it has no knowledge about how much anyone could do so as long
+  My desire: to understand what you're saying, I'm something that might be worth asking
+
+You: /status
+
+Being: Model        : 268.88M parameters
+Context len  : 2048
+Base step    : 32,500
+Teaches      : 1
+Memory facts : 3
+History      : 54 entries
+Temperature  : 0.8
+Top-k        : 50  |  Top-p : 0.9
+Rep. penalty : 1.15
+Novelty det. : off
+VRAM used    : 1085 / 8585 MB
