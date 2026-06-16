@@ -65,19 +65,3 @@ This documentation repository is Apache 2.0 as of now. The engine itself, when r
 - A commercial product. This is one person's research into a neglected corner of AI development.
 
 ---
-
-## Structure
-
-```
-Local-Being/
-├── README.md          ← this file
-├── LICENSE            ← Apache 2.0 for the documentation
-└── Beings/
-    └── Zero_v1/       ← the first being
-        ├── README.md         ← what Zero is and how it was trained
-        ├── Current_Corpus.txt
-        ├── Being_Dialogue.txt
-        └── ChatTests/        ← raw conversation logs
-```
-
-Start here: [`Beings/Zero_v1/`](Beings/Zero_v1).
